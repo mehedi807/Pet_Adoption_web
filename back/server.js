@@ -40,9 +40,9 @@ app.use(session({
     cookie: {
         //maxAge: 2000,
         maxAge: 24 * 60 * 60 * 1000, 
-        httpOnly: false,
-        secure: false,            
-        sameSite: 'LAX', 
+        //httpOnly: false,
+        secure: true,            
+        sameSite: 'none', 
     },
 }));
 app.get("/api/session",(req, res) => {
@@ -219,7 +219,7 @@ app.delete('/api/pets', async (req, res) => {
         res.status(500).json({ error: 'An error occurred while deleting the pet.' });
     }
 });
-app.listen(5000, () => {
+app.listen(process.env.PORT, () => {
     connectDB();
     console.log("Server Started at port 5000");
 })
