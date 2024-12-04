@@ -2,6 +2,32 @@ document.addEventListener('DOMContentLoaded', () => {
     checkSession();
     fetchPetDetails();
 });
+//add hiddent to class list if clicked outside container
+const loginOverlay = document.getElementById('loginOverlay');
+loginOverlay.addEventListener('click', (event) => {
+    if (event.target === loginOverlay) {
+        loginOverlay.classList.add('hidden');
+    }
+});
+const signUpOverlay = document.getElementById('signUpOverlay');
+signUpOverlay.addEventListener('click', (event) => {
+    if (event.target === signUpOverlay) {
+        signUpOverlay.classList.add('hidden');
+    }
+});
+const uploadOverlay = document.getElementById('uploadOverlay');
+uploadOverlay.addEventListener('click', (event) => {
+    if (event.target === uploadOverlay) {
+        uploadOverlay.classList.add('hidden');
+    }
+});
+const drop_menu_overlay = document.getElementById('drop_menu_overlay');
+drop_menu_overlay.addEventListener('click', (event) => {
+    if (event.target === drop_menu_overlay) {
+        drop_menu_overlay.classList.add('hidden');
+    }
+});
+
 //drop_menu_overlay
 document.getElementById('drop_menu').addEventListener('click', () => {
     document.getElementById('drop_menu_overlay').classList.toggle('hidden');
@@ -35,38 +61,9 @@ document.getElementById('show_uoload_overlay').addEventListener('click', () => {
 document.getElementById('explore').addEventListener('click', () => {
     window.location.href = "#adoptpet";
 });
-function closeUpload() {
-    document.getElementById('uploadOverlay').classList.add('hidden');
-}
-// Close login/signup popups
-function closeLogin() {
-    document.getElementById('loginOverlay').classList.add('hidden');
-    document.getElementById('signUpOverlay').classList.add('hidden');
-}
-//check user sessions
-async function checkSession() {
-    try {
-        const response = await fetch('http://localhost:5000/api/session', {
-            method: 'GET',
-            credentials: 'include', // Ensures cookies are sent with the request
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
 
-        const result = await response.json();
-
-        if (result.loggedIn) {
-            updateUIForLoggedInUser(result.user);
-        } else {
-            updateUIForLogout();
-        }
-    } catch (error) {
-        console.error('Error checking session:', error);
-    }
-}
 //logout user
-document.getElementById('logout').addEventListener('click', async() =>{
+document.getElementById('logout').addEventListener('click', async () => {
     try {
         const response = await fetch("http://localhost:5000/api/logout", {
             method: "POST",
@@ -84,22 +81,10 @@ document.getElementById('logout').addEventListener('click', async() =>{
         alert("An error occurred. Please try again later.");
     }
 });
-// Update UI for logged-in user
-function updateUIForLoggedInUser(user) {
-    document.getElementById('logInButton').classList.add('hidden');
-    document.getElementById('drop_menu').classList.remove('hidden');
-    document.getElementById('welcomeMessage').classList.remove('hidden');
-    document.getElementById('welcomeMessage').textContent = `Welcome, ${user.name}!`; 
-}
-// Update UI logout user
-function updateUIForLogout() {
-    document.getElementById('logInButton').classList.remove('hidden');
-    document.getElementById('drop_menu').classList.add('hidden');
-    document.getElementById('welcomeMessage').classList.add('hidden');
-}
+
 //show_all pet
 document.getElementById("show_all").addEventListener('click', () => {
-    search_input.value='';
+    search_input.value = '';
     fetchPetDetails();
 })
 //Get signup from html
@@ -241,6 +226,183 @@ document.getElementById('pet_details_form').addEventListener('submit', async (ev
 //     }
 // }
 //display pet
+
+let selected = null;
+let global_search = null;
+//search by type
+document.getElementById("cat").addEventListener('click', async (event) => {
+    event.preventDefault();
+    selected = selected === "cat" ? null : "cat";
+    //selected=cat;
+    search_input.value = '';
+    try {
+        const response = await fetch("http://localhost:5000/api/search?type=cat", {
+            method: "GET",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            console.log(result);
+            // if(!global_search){
+            displayPetCards(result);
+            //}
+
+            //togglefetch_display(result);
+        } else {
+            alert(`Error: ${result.message}`);
+        }
+        //selected = null;
+    } catch (error) {
+        console.error("Error :", error);
+        alert("An error occurred. Please try again later.");
+    }
+});
+document.getElementById("dog").addEventListener('click', async (event) => {
+    event.preventDefault();
+    //selected = selected === "cat" ? null : "cat";
+    search_input.value = '';
+    try {
+        const response = await fetch("http://localhost:5000/api/search?type=dog", {
+            method: "GET",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            console.log(result);
+            //togglefetch_display(result);
+            // if(!global_search){
+            displayPetCards(result);
+            //}
+        } else {
+            alert(`Error: ${result.message}`);
+        }
+        // selected = null;
+    } catch (error) {
+        console.error("Error :", error);
+        alert("An error occurred. Please try again later.");
+    }
+});
+document.getElementById("bird").addEventListener('click', async (event) => {
+    event.preventDefault();
+    //selected = selected === "cat" ? null : "cat";
+    //selected = bird;
+    search_input.value = '';
+    try {
+        const response = await fetch("http://localhost:5000/api/search?type=bird", {
+            method: "GET",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            console.log(result);
+            //togglefetch_display(result);
+            //if(!global_search){
+            displayPetCards(result);
+            //}
+        } else {
+            alert(`Error: ${result.message}`);
+        }
+        //selected = null;
+    } catch (error) {
+        console.error("Error :", error);
+        alert("An error occurred. Please try again later.");
+    }
+});
+//search by Location
+const search_input = document.getElementById("search_input");
+search_input.addEventListener('keydown', async (event) => {
+    if (event.key === "Enter") {
+        global_search = true;
+        const searchValue = search_input.value;
+        const encodedValue = encodeURIComponent(searchValue);
+        //console.log(selected);
+        const url = 'http://localhost:5000/api/search?location=' + encodedValue;
+        try {
+            const response = await fetch(url, {
+                method: "GET",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                //console.log(result);
+                //search_input.value='';
+                displayPetCards(result);
+
+            } else {
+                alert(`Error: ${result.message}`);
+            }
+        } catch (error) {
+            console.error("Error :", error);
+            alert("An error occurred. Please try again later.");
+        }
+
+    }
+});
+
+async function checkSession() {
+    try {
+        const response = await fetch('http://localhost:5000/api/session', {
+            method: 'GET',
+            credentials: 'include', // Ensures cookies are sent with the request
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        const result = await response.json();
+
+        if (result.loggedIn) {
+            updateUIForLoggedInUser(result.user);
+            //get_role(result.user);
+        } else {
+            updateUIForLogout();
+        }
+    } catch (error) {
+        console.error('Error checking session:', error);
+    }
+}
+async function get_role(username) {
+    //const username = user.name;
+    //console.log(username);
+    const url = "http://localhost:5000/api/role?name=" + username;
+    try {
+        const response = await fetch(url);
+        const role = await response.json();
+        //console.log(role);
+        return role;
+    } catch (error) {
+        console.error("Error getting role:", error);
+        alert("Error getting role");
+    }
+};
+function closeUpload() {
+    document.getElementById('uploadOverlay').classList.add('hidden');
+}
+// Close login/signup popups
+function closeLogin() {
+    document.getElementById('loginOverlay').classList.add('hidden');
+    document.getElementById('signUpOverlay').classList.add('hidden');
+}
 async function fetchPetDetails() {
     try {
         const response = await fetch('http://localhost:5000/api/pets');
@@ -274,9 +436,9 @@ function displayPetCards(pets) {
         nameElement.className = 'text-xl font-bold mb-2'; // Tailwind classes for name styling
 
         // Create the pet details (gender and location)
-        const genderElement = document.createElement('p');
-        genderElement.textContent = "Age : " + pet.age || 'unavailable';
-        genderElement.className = 'text-gray-700'; // Tailwind classes for text styling
+        const ageElement = document.createElement('p');
+        ageElement.textContent = "Age : " + pet.age || 'unavailable';
+        ageElement.className = 'text-gray-700'; // Tailwind classes for text styling
 
         const locationElement = document.createElement('p');
         locationElement.textContent = pet.location;
@@ -285,144 +447,142 @@ function displayPetCards(pets) {
         // Append elements to the card
         card.appendChild(img);
         card.appendChild(nameElement);
-        card.appendChild(genderElement);
+        //scard.appendChild(ageElement);
         card.appendChild(locationElement);
 
+        card.addEventListener('click', () => {
+            CardClick(pet);
+        });
         // Append the card to the container
         container.appendChild(card);
     });
 }
-let selected = null;
-let global_search = null;
-//search by type
-document.getElementById("cat").addEventListener('click', async (event) => {
-    event.preventDefault();
-     selected = selected === "cat" ? null : "cat";
-    //selected=cat;
-    search_input.value='';
-    try {
-        const response = await fetch("http://localhost:5000/api/search?type=cat", {
-            method: "GET",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
+function CardClick(pet) {
+    console.log(pet.breed);
+    const container = document.getElementById('petdetailsOverlay');
+    container.classList.remove('hidden');
+    container.innerHTML = ''; // Clear existing content
+    //container.className= '';
 
-        const result = await response.json();
+    const petdetails = document.createElement('div');
+    petdetails.className = 'bg-white shadow-lg rounded-lg py-3 w-auto  space-y-4 relative px-8';
 
-        if (response.ok) {
-            console.log(result);
-           // if(!global_search){
-                displayPetCards(result);
-            //}
-            
-            //togglefetch_display(result);
-        } else {
-            alert(`Error: ${result.message}`);
-        }
-        //selected = null;
-    } catch (error) {
-        console.error("Error :", error);
-        alert("An error occurred. Please try again later.");
-    }
-});
-document.getElementById("dog").addEventListener('click', async (event) => {
-    event.preventDefault();
-    //selected = selected === "cat" ? null : "cat";
-    search_input.value='';
-    try {
-        const response = await fetch("http://localhost:5000/api/search?type=dog", {
-            method: "GET",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
+    // Close Button
+    const closeButton = document.createElement('button');
+    closeButton.innerHTML = '&times;';
+    closeButton.className = 'absolute top-0 right-3 text-2xl font-bold text-gray-500 hover:text-red-500';
+    closeButton.onclick = () => container.classList.add('hidden');
 
-        const result = await response.json();
+    // Pet Image
+    const img = document.createElement('img');
+    img.src = pet.image || 'https://via.placeholder.com/300';
+    img.alt = pet.name || 'Pet Image';
+    img.className = 'w-96 h-64 object-cover rounded-md';
 
-        if (response.ok) {
-            console.log(result);
-            //togglefetch_display(result);
-           // if(!global_search){
-                displayPetCards(result);
-            //}
-        } else {
-            alert(`Error: ${result.message}`);
-        }
-        // selected = null;
-    } catch (error) {
-        console.error("Error :", error);
-        alert("An error occurred. Please try again later.");
-    }
-});
-document.getElementById("bird").addEventListener('click', async (event) => {
-    event.preventDefault();
-    //selected = selected === "cat" ? null : "cat";
-    //selected = bird;
-    search_input.value='';
-    try {
-        const response = await fetch("http://localhost:5000/api/search?type=bird", {
-            method: "GET",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
+    // Pet Name
+    const nameElement = document.createElement('h3');
+    nameElement.textContent = pet.name || 'Unknown Name';
+    nameElement.className = 'text-3xl font-bold text-gray-800';
 
-        const result = await response.json();
+    // Pet Details Section
+    const detailsContainer = document.createElement('div');
+    detailsContainer.className = 'flex justify-between pb-4';
 
-        if (response.ok) {
-            console.log(result);
-            //togglefetch_display(result);
-            //if(!global_search){
-                displayPetCards(result);
-            //}
-        } else {
-            alert(`Error: ${result.message}`);
-        }
-        //selected = null;
-    } catch (error) {
-        console.error("Error :", error);
-        alert("An error occurred. Please try again later.");
-    }
-});
-//search by Location
-const search_input = document.getElementById("search_input");
-search_input.addEventListener('keydown', async (event) => {
-    if (event.key === "Enter") {
-        global_search = true;
-        const searchValue = search_input.value;
-        const encodedValue = encodeURIComponent(searchValue);
-        //console.log(selected);
-        const url = 'http://localhost:5000/api/search?location=' + encodedValue;
-        try {
-            const response = await fetch(url, {
-                method: "GET",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
+    const detailLeft = document.createElement('div');
+    const detailRight = document.createElement('div');
+
+    // Breed, Age, Location
+    const breedElement = createDetailElement('Breed', pet.breed || 'Unavailable');
+    const ageElement = createDetailElement('Age', pet.age || 'Unavailable');
+    const locationElement = createDetailElement('Location', pet.location || 'Unavailable');
+
+    // Contact Information
+    const contactElement = createDetailElement('Contact', '017xxxxxxxx');
+
+    //fav button
+    const Favbtndiv = document.createElement('div');
     
-            const result = await response.json();
-    
-            if (response.ok) {
-                //console.log(result);
-                //search_input.value='';
-                displayPetCards(result);
-                
-            } else {
-                alert(`Error: ${result.message}`);
-            }
-        } catch (error) {
-            console.error("Error :", error);
-            alert("An error occurred. Please try again later.");
+    Favbtndiv.className = 'flex justify-center mt-4'; // Add 'hidden' class initially
+
+    const favButton = document.createElement('button');
+    favButton.id = 'favBtn';
+    favButton.textContent = 'Add To Favourite';
+    favButton.className = "h-9 text-sm w-36 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl  transition duration-200 ease-in-out transform hover:scale-105";
+    Favbtndiv.appendChild(favButton);
+
+    //document.body.appendChild(Favbtndiv);
+
+
+    detailLeft.appendChild(breedElement);
+    detailLeft.appendChild(ageElement);
+    detailLeft.appendChild(locationElement);
+
+    detailRight.appendChild(contactElement);
+    detailRight.appendChild(Favbtndiv);
+
+    detailsContainer.appendChild(detailLeft);
+    detailsContainer.appendChild(detailRight);
+
+    // Append all elements
+    petdetails.appendChild(closeButton);
+    petdetails.appendChild(img);
+    petdetails.appendChild(nameElement);
+    petdetails.appendChild(detailsContainer);
+
+    container.appendChild(petdetails);
+
+    // Add event listener for closing the overlay when clicking outside the details card
+    container.addEventListener('click', (event) => {
+        if (event.target === container) {
+            container.classList.add('hidden');
         }
-        
+    });
+}
+
+// Helper function to create detail elements
+function createDetailElement(label, value) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'text-gray-700';
+
+    const labelElement = document.createElement('span');
+    labelElement.textContent = `${label}: `;
+    labelElement.className = 'font-semibold';
+
+    const valueElement = document.createElement('span');
+    valueElement.textContent = value;
+    valueElement.className= 'text-sm'
+
+    wrapper.appendChild(labelElement);
+    wrapper.appendChild(valueElement);
+    return wrapper;
+}
+
+async function updateUIForLoggedInUser(user) {
+
+    const role = await get_role(user.name);
+    //console.log(role);
+
+    document.getElementById('logInButton').classList.add('hidden');
+    document.getElementById('drop_menu').classList.remove('hidden');
+    document.getElementById('welcomeMessage').classList.remove('hidden');
+    document.getElementById('welcomeMessage').textContent = `Welcome, ${user.name}!`;
+
+    if (role == 'adopter') {
+        document.getElementById('show_uoload_overlay').classList.add('hidden');
     }
-});
+    else if (role == 'rescuer') {
+        document.getElementById('show_uoload_overlay').classList.remove('hidden');
+    }
+
+
+}
+// Update UI logout user
+function updateUIForLogout() {
+    document.getElementById('logInButton').classList.remove('hidden');
+    document.getElementById('drop_menu').classList.add('hidden');
+    document.getElementById('welcomeMessage').classList.add('hidden');
+}
+
 
 
 
