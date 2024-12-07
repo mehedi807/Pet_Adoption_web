@@ -24,7 +24,13 @@ const petsSchema = new mongoose.Schema({
     image: {
         type: String,
         required: true,
-    }
+    },
+    petID:{
+        type: String,
+        
+    },
+    
+
 },{
     timestamps: true,
 });

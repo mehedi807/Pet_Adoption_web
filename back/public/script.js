@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'https://cdn.jsdelivr.net/npm/uuid@9.0.0/dist/esm-browser/index.js';
+let loggdUser = null;
 document.addEventListener('DOMContentLoaded', () => {
     checkSession();
     fetchPetDetails();
@@ -43,7 +45,81 @@ document.getElementById('signUpbutton').addEventListener('click', () => {
 });
 //shop upload popup
 document.getElementById('show_uoload_overlay').addEventListener('click', () => {
-    document.getElementById('uploadOverlay').classList.remove('hidden');
+    document.getElementById('uploadOverlay').classList.toggle('hidden');
+});
+//view profile
+document.getElementById('viewprofile').addEventListener('click', () => {
+    const div1 = document.getElementById('div1');
+    div1.innerHTML = ''
+
+    const h1 = document.createElement('h1');
+    h1.textContent = "Hello world from view-profile"
+
+    div1.appendChild(h1);
+
+});
+//call view favourite
+document.getElementById('viewfavourite').addEventListener('click', async () => {
+    const div1 = document.getElementById('div1');
+    div1.innerHTML = ''
+    console.log(loggdUser);
+    //get favourite pets
+    const url = "http://localhost:5000/api/users?usrID=" + loggdUser;
+    try {
+        const response = await fetch(url);
+        if (response.ok) {
+            const pets = await response.json();
+
+            pets.forEach(pet => {
+                const card = document.createElement('div');
+                card.className = 'bg-white shadow-md rounded-lg p-4 m-4 w-44 h-60 transition duration-300  ease-in-out hover:scale-105';
+
+                const img = document.createElement('img');
+                img.src = pet.image;
+                //img.alt = "Image";
+                img.className = 'w-32 h-36 object-cover rounded-md mb-4';
+
+                const nameElement = document.createElement('h3');
+                nameElement.textContent = pet.name;
+                nameElement.className = 'text-xl font-bold mb-2';
+
+                const locationElement = document.createElement('p');
+                locationElement.textContent = pet.location;
+                locationElement.className = 'text-gray-700';
+
+                card.appendChild(img);
+                card.appendChild(nameElement);
+                card.appendChild(locationElement);
+
+                div1.appendChild(card);
+
+            });
+        }
+        else {
+            const div = document.createElement('div');
+            div.className='flex justify-center h-full w-full'
+            const msg = document.createElement('h1')
+            msg.textContent = 'Your Favourite is Empty !';
+            msg.className='';
+            div.appendChild(msg);
+
+            div1.appendChild(div);
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Error");
+    }
+});
+//view user pet
+document.getElementById('viewuserpet').addEventListener('click', () => {
+    const div1 = document.getElementById('div1');
+    div1.innerHTML = ''
+
+    const h1 = document.createElement('h1');
+    h1.textContent = "Hello world from view-pets"
+
+    div1.appendChild(h1);
+
 });
 //hide
 // document.addEventListener('click', (event) => {
@@ -94,6 +170,7 @@ document.getElementById("signUpForm").addEventListener("submit", async (event) =
     const name = document.getElementById("name").value;
     const email = document.getElementById("email").value;
     const pass = document.getElementById("password").value;
+    const usrID = uuidv4();
 
     //const user = { name, email, pass };
     const form = document.getElementById("signUpForm");
@@ -101,8 +178,8 @@ document.getElementById("signUpForm").addEventListener("submit", async (event) =
     let role = null;
     if (selectedRole) {
         role = selectedRole.value;
-        console.log("Selected Role:", role);
-        console.log(typeof role);
+        //console.log("Selected Role:", role);
+        //console.log(typeof role);
     } else {
         alert("Please select a role!");
         return;
@@ -115,14 +192,17 @@ document.getElementById("signUpForm").addEventListener("submit", async (event) =
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ name, email, pass, role }),
+            body: JSON.stringify({ name, email, pass, role, usrID }),
         });
 
         const result = await response.json();
 
         if (response.ok) {
             alert("Sign-up successful!");
-            closeLogin();
+            //closeLogin();
+            document.getElementById('signUpOverlay').classList.add('hidden');
+            document.getElementById('loginOverlay').classList.remove('hidden');
+
         } else {
             alert(`Error: ${result.message}`);
         }
@@ -167,6 +247,7 @@ document.getElementById("loginForm").addEventListener("submit", async (event) =>
     }
 
 });
+
 //Get pet details from html
 document.getElementById('pet_details_form').addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -177,8 +258,12 @@ document.getElementById('pet_details_form').addEventListener('submit', async (ev
     const breed = document.getElementById("breed").value;
     const location = document.getElementById("location").value;
     const image = document.getElementById("imageUpload").files[0];
-
-    if (!name || !type || !age || !breed || !location || !image) {
+    const petID = uuidv4();
+    //console.log(petID);
+    if (!loggdUser) {
+        return alert('Login first!');
+    }
+    if (!name || !type || !age || !breed || !location || !petID) {
         alert("Please fill all fields");
         return;
     }
@@ -193,6 +278,8 @@ document.getElementById('pet_details_form').addEventListener('submit', async (ev
     formData.append('breed', breed);
     formData.append('location', location);
     formData.append('image', image);
+    formData.append('petID', petID);
+    //console.log(formData);
     try {
         const response = await fetch("http://localhost:5000/api/pets", {
             method: "POST",
@@ -358,7 +445,6 @@ search_input.addEventListener('keydown', async (event) => {
 
     }
 });
-
 async function checkSession() {
     try {
         const response = await fetch('http://localhost:5000/api/session', {
@@ -373,6 +459,7 @@ async function checkSession() {
 
         if (result.loggedIn) {
             updateUIForLoggedInUser(result.user);
+            loggdUser = result.user.usrID;
             //get_role(result.user);
         } else {
             updateUIForLogout();
@@ -398,11 +485,13 @@ async function get_role(username) {
 function closeUpload() {
     document.getElementById('uploadOverlay').classList.add('hidden');
 }
+window.closeUpload = closeUpload;
 // Close login/signup popups
 function closeLogin() {
     document.getElementById('loginOverlay').classList.add('hidden');
     document.getElementById('signUpOverlay').classList.add('hidden');
 }
+window.closeLogin = closeLogin;
 async function fetchPetDetails() {
     try {
         const response = await fetch('http://localhost:5000/api/pets');
@@ -457,6 +546,7 @@ function displayPetCards(pets) {
         container.appendChild(card);
     });
 }
+//show ped details card
 function CardClick(pet) {
     console.log(pet.breed);
     const container = document.getElementById('petdetailsOverlay');
@@ -501,7 +591,7 @@ function CardClick(pet) {
 
     //fav button
     const Favbtndiv = document.createElement('div');
-    
+
     Favbtndiv.className = 'flex justify-center mt-4'; // Add 'hidden' class initially
 
     const favButton = document.createElement('button');
@@ -518,7 +608,9 @@ function CardClick(pet) {
     detailLeft.appendChild(locationElement);
 
     detailRight.appendChild(contactElement);
-    detailRight.appendChild(Favbtndiv);
+    if(loggdUser){
+        detailRight.appendChild(Favbtndiv);
+    }
 
     detailsContainer.appendChild(detailLeft);
     detailsContainer.appendChild(detailRight);
@@ -537,6 +629,30 @@ function CardClick(pet) {
             container.classList.add('hidden');
         }
     });
+    favBtn.addEventListener('click', async () => {
+        try {
+            //console.log(loggdUser);
+            const petID = pet.petID;
+            //console.log(pet.petId);
+            const response = await fetch(`/api/users/${loggdUser}/favorites`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ petID })
+            });
+
+            if (response.ok) {
+                alert('Added to favorites!');
+                container.classList.add('hidden');
+            } else {
+                const error = await response.json();
+                alert(error.message || 'Failed to add to favorites.');
+            }
+        } catch (error) {
+            console.error(err);
+            alert('Error adding to favorites.');
+        }
+
+    });
 }
 
 // Helper function to create detail elements
@@ -550,7 +666,7 @@ function createDetailElement(label, value) {
 
     const valueElement = document.createElement('span');
     valueElement.textContent = value;
-    valueElement.className= 'text-sm'
+    valueElement.className = 'text-sm'
 
     wrapper.appendChild(labelElement);
     wrapper.appendChild(valueElement);
@@ -569,8 +685,10 @@ async function updateUIForLoggedInUser(user) {
 
     if (role == 'adopter') {
         document.getElementById('show_uoload_overlay').classList.add('hidden');
+        document.getElementById('viewuserpet').classList.add('hidden');
     }
     else if (role == 'rescuer') {
+        document.getElementById('viewfavourite').classList.add('hidden');
         document.getElementById('show_uoload_overlay').classList.remove('hidden');
     }
 

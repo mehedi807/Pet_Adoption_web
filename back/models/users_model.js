@@ -16,6 +16,14 @@ const usersSchema = new mongoose.Schema({
     role:{
         type: String,
         required: true,
+    },
+    usrID:{
+        type: String,
+        required: true,
+    },
+    favorites:{
+        type: [String],
+        required: false,
     }
 },{
     timestamps: true,

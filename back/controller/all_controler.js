@@ -1,8 +1,9 @@
 import User from '../models/users_model.js';
 import Pet from '../models/pet_details_model.js';
 import bcrypt from 'bcrypt';
+import cloudinary from 'cloudinary';
 
-export const getSession = async (req, res) => { 
+export const getSession = async (req, res) => {
     console.log('Session Data:', req.session);
     if (req.session.user) {
         res.status(200).json({ loggedIn: true, user: req.session.user });
@@ -13,30 +14,32 @@ export const getSession = async (req, res) => {
 
 export const search_pet = async (req, res) => {
     try {
-      const { name, breed, location, type } = req.query;
-  
-      // Build a dynamic query
-      const query = {};
-      if (name) query.name = new RegExp(name, 'i'); // Case-insensitive
-      if (breed) query.breed = new RegExp(breed, 'i');
-      if (location) query.location = new RegExp(location, 'i');
-      if (type) query.type = new RegExp(type, 'i');
-  
-      const result = await Pet.find(query);
-      res.status(200).json(result);
-    } catch (err) {
-      res.status(500).json({ error: 'Server error', details: err.message });
-    }
-  };
+        const { name, breed, location, type, petID } = req.query;
 
-  export const user_add = async (req, res) => {
-    const {name , email ,pass ,role} = req.body;
-    if (!name || !email || !pass) {
+        // Build a dynamic query
+        const query = {};
+        if (name) query.name = new RegExp(name, 'i'); // Case-insensitive
+        if (breed) query.breed = new RegExp(breed, 'i');
+        if (location) query.location = new RegExp(location, 'i');
+        if (type) query.type = new RegExp(type, 'i');
+        if (petID) query.petID = new RegExp(petID, 'i');
+
+
+        const result = await Pet.find(query);
+        res.status(200).json(result);
+    } catch (err) {
+        res.status(500).json({ error: 'Server error', details: err.message });
+    }
+};
+
+export const user_add = async (req, res) => {
+    const { name, email, pass, role, usrID } = req.body;
+    if (!name || !email || !pass || !usrID) {
         return res.status(400).json({ success: false, message: "Please provide all fields" });
     }
     const saltRounds = 10;
     const hashedPass = await bcrypt.hash(pass, saltRounds);
-    const newuser = new User({name, email, pass: hashedPass, role});
+    const newuser = new User({ name, email, pass: hashedPass, role, usrID });
 
     try {
         await newuser.save();
@@ -44,6 +47,56 @@ export const search_pet = async (req, res) => {
     } catch (error) {
         console.error("Error adding user", error.message)
         res.status(500).json({ success: false, message: "server error" });
+    }
+};
+//update user Favourite
+export const user_update_fav = async (req, res) => {
+    const { usrID } = req.params;
+    const { petID } = req.body;
+    //console.log(usrID);
+
+
+    try {
+        const pet = await Pet.findOne({ petID });
+        if (!pet) {
+            return res.status(404).json({ message: 'Pet ID not found' });
+        }
+        console.log(usrID);
+
+        const user = await User.findOneAndUpdate(
+            { usrID },
+            { $addToSet: { favorites: petID } },
+            { new: true }
+        );
+        if (!user) {
+            return res.status(404).json({ message: 'Login First!' });
+        }
+        res.status(200).json({ message: 'Pet added to favorites', favorites: user.favorites });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+//get user Favourite
+export const get_user_fav = async (req, res) => {
+    const { usrID } = req.query;
+    console.log(usrID);
+    
+    try {
+        const user = await User.findOne({ usrID });
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+        const favorites = user.favorites
+        if (!favorites || favorites.length === 0) {
+            return res.status(404).json({ success: false, message: "Favorites list is empty" });
+        }
+        const pets = await Pet.find({ petID: { $in: favorites } });
+        //console.log(pets);
+        res.status(200).json(pets);
+    } catch (error) {
+        console.error('An error occurred :', error);
+        res.status(500).json({ error: 'An error occurred.' });
     }
 };
 
@@ -62,19 +115,19 @@ export const user_login = async (req, res) => {
             return res.status(401).json({ success: false, message: "Invalid password" });
         }
         req.session.user = {
-            id: user._id,
+            usrID: user.usrID,
             name: user.name,
             email: user.email,
         };
         res.status(200).json({ success: true, message: "Login successful", user });
-        
+
     } catch (error) {
         console.error("Error during login:", error.message);
         res.status(500).json({ success: false, message: "Server error" });
     }
 };
-export const getRole = async (req,res) => {
-    const {name} = req.query;
+export const getRole = async (req, res) => {
+    const { name } = req.query;
     try {
         const user = await User.findOne({ name }); // Find the user by name
         if (!user) {
@@ -82,7 +135,8 @@ export const getRole = async (req,res) => {
         }
         res.status(200).json(user.role)
     } catch (error) {
-        
+        console.error('An error occurred :', error);
+        res.status(500).json({ error: 'An error occurred.' });
     }
 };
 
@@ -97,22 +151,25 @@ export const user_logout = (req, res) => {
 };
 
 export const add_pet = async (req, res) => {
-    const { name, type, breed, age, location } = req.body;
+    console.log(0);
+    const { name, type, breed, age, location, petID } = req.body;
 
-    if (!name || !type || !breed || !age || !location) {
+    if (!name || !type || !breed || !age || !location || !petID) {
         return res.status(400).json({ success: false, message: "Please provide all fields" });
     }
-
+    console.log(1);
     let imageUrl = '';
     if (req.file) {
         try {
             const result = await cloudinary.v2.uploader.upload(req.file.path);
             imageUrl = result.secure_url;
         } catch (error) {
+            petID
             console.error("Error uploading image:", error);
             return res.status(500).json({ success: false, message: "Error uploading image" });
         }
     }
+    console.log(2);
     const newPet = new Pet({
         name,
         type,
@@ -120,8 +177,11 @@ export const add_pet = async (req, res) => {
         age,
         location,
         image: imageUrl,
+        petID,
     });
+    console.log(3);
     try {
+        console.log(4);
         await newPet.save();
         res.status(200).json({ success: true, date: newPet });
     } catch (error) {

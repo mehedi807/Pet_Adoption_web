@@ -35,7 +35,7 @@
                     <i class="fa-solid fa-bars" style="color: #ffffff;"></i>
                 </button>
                 <button id="logInButton"
-                class="bg-sky-600 text-white font-semibold px-5 py-2 rounded-lg shadow-md hover:bg-indigo-600 hover:shadow-lg transition-transform transform hover:scale-105 duration-300">
+                    class="bg-sky-600 text-white font-semibold px-5 py-2 rounded-lg shadow-md hover:bg-indigo-600 hover:shadow-lg transition-transform transform hover:scale-105 duration-300">
                     Log In
                 </button>
             </div>
@@ -69,8 +69,7 @@
                     </div>
                 </div>
 
-                <img src="./drawable/cat_home.jpg" alt="catImage"
-                    class=" rounded-xl w-[38rem] h-[20rem] mr-12">
+                <img src="./drawable/cat_home.jpg" alt="catImage" class=" rounded-xl w-[38rem] h-[20rem] mr-12">
                 <!-- <input type="text" placeholder="Search By Pets, Breeds, or Zip Code"
                     class="bg-white text-gray-950 ml-6  w-full mt-4 px-3 py-2 border-4 border-header-1 rounded-md shadow-sm focus:outline-none focus:ring-orange-600 focus:border-orange-600 sm:text-sm" /> -->
             </div>
@@ -86,7 +85,8 @@
                 <img src="./drawable/dogicon.png" alt="dog" tabindex="0" width="100px" height="100px" id="dog" class="cursor-pointer ml-10 p-1 bg-header-1 rounded-2xl border-4 border-orange-500
                      focus:border-sky-500 dark:border-white transition duration-300 ease-in-out 
                       hover:scale-105">
-                <img src="./drawable/birds_icon.png" tabindex="0" alt="birds" width="100px" height="100px" id="bird" class="cursor-pointer ml-10 p-1 bg-header-1 rounded-2xl border-4 border-orange-500 
+                <img src="./drawable/birds_icon.png" tabindex="0" alt="birds" width="100px" height="100px" id="bird"
+                    class="cursor-pointer ml-10 p-1 bg-header-1 rounded-2xl border-4 border-orange-500 
                     focus:border-sky-500 dark:border-white transition duration-300 ease-in-out 
                      hover:scale-105">
             </div>
@@ -94,11 +94,14 @@
                 <input id="search_input" type="text" placeholder="Search By Location" class=" bg-white text-gray-950  w-72  mr-6 px-3 py-2 border-4
                      border-header-1 rounded-md shadow-sm focus:outline-none focus:ring-orange-600
                       focus:border-orange-600 sm:text-sm" />
-                <button id="show_all" class=" bg-sky-600 text-white font-semibold px-5 py-2 rounded-lg shadow-md hover:bg-indigo-600 hover:shadow-lg transition-transform transform hover:scale-105 duration-300  mr-6">Show All</button>
+                <button id="show_all"
+                    class=" bg-sky-600 text-white font-semibold px-5 py-2 rounded-lg shadow-md hover:bg-indigo-600 hover:shadow-lg transition-transform transform hover:scale-105 duration-300  mr-6">Show
+                    All</button>
             </div>
             <!-- <h1 class=" ml-6 mt-7 text-xl font-bold text-gray-900 dark:text-white">Pets Available For Adoption</h1> -->
             <div id="petContainer" class="flex flex-wrap justify-center gap-2"></div>
-            <div id="petdetailsOverlay" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden">
+            <div id="petdetailsOverlay"
+                class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden">
             </div>
             <!-- <div id="favbtndiv" class="flex justify-center  mt-4">
                 <button id="favbtn"
@@ -421,13 +424,29 @@
         </div>
     </div>
     <!-- Menu Overlay for Popup -->
-    <div id="drop_menu_overlay"
-        class="text-white fixed inset-0 bg-opacity-70 flex items-start justify-end top-14 hidden"> 
-        <div class="bg-slate-800 text-white  font-semibold text-base rounded-lg pl-7 pt-3 pb-3 mr-3 max-w-sm w-48 shadow-lg relative">
-            <h1 class="mb-1 hover:underline cursor-pointer hover:text-orange-500">Profile</h1>
-            <h1 class="mb-1 hover:underline cursor-pointer hover:text-orange-500">Favourite</h1>
-            <h1 id="logout" class="hover:underline cursor-pointer hover:text-orange-500">Logout</h1>
+    <div id="drop_menu_overlay" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden">
+        <div class="bg-slate-50 rounded-xl w-full max-w-[50rem] relative h-[34rem] flex">
+            <div class="bg-slate-800 rounded-l-xl w-full max-w-36 h-[34rem] pt-5 text-[19px] text-white font-semibold flex flex-col justify-between ">
+                <div class="cursor-pointer">
+                    <h1 id="viewprofile"
+                        class="hover:bg-orange-500  rounded-l-sm pl-6 pt-1 pb-1 hover:text-black transition duration-20 ease-in-out ">
+                        Profile</h1>
+                    <h1 id="viewfavourite"
+                        class="hover:bg-orange-500  rounded-l-sm pl-6 hover:text-black transition duration-20 ease-in-out pt-1 pb-1">
+                        Favourite</h1>
+                    <h1 id="viewuserpet"
+                        class="hover:bg-orange-500  rounded-l-sm pl-6 hover:text-black transition duration-20 ease-in-out pt-1 pb-1">
+                        Your Pets</h1>
+                </div>
+                <button id="logout"
+                    class="bg-orange-500 text-black hover:text-slate-50 rounded-md text-base pr-3  pl-3 ml-6 mb-4 mr-9">Logout</button>
+            </div>
+            <div id="div1" class="flex flex-wrap justify-center gap-2 ">
+                
+            </div>
         </div>
+        
+
     </div>
 
 
@@ -435,7 +454,8 @@
 
 
 
-    <script src="script.js"></script>
+
+    <script type="module" src="script.js"></script>
 </body>
 
 </html>
