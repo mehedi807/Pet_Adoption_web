@@ -24,6 +24,10 @@ const usersSchema = new mongoose.Schema({
     favorites:{
         type: [String],
         required: false,
+    },
+    phone:{
+        type: String,
+        required: true,
     }
 },{
     timestamps: true,

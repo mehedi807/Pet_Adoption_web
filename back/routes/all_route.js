@@ -3,7 +3,7 @@ import multer from 'multer';
 import cloudinary from 'cloudinary';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
-import { getRole, getSession, search_pet, user_add, add_pet, user_login, user_logout, get_pets, delete_pet, user_update_fav ,get_user_fav} from '../controller/all_controler.js';
+import { getRole, getSession, get_user,search_pet, user_add, add_pet, user_login, user_logout, get_pets, delete_pet, user_update_fav ,get_user_fav} from '../controller/all_controler.js';
 
 const router = express.Router();
 
@@ -46,5 +46,6 @@ router.delete('/pets', delete_pet);
 router.get("/role", getRole);
 router.post('/users/:usrID/favorites', user_update_fav);
 router.get('/users', get_user_fav);
+router.post('/users/find', get_user);
 
 export default router;

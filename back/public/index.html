@@ -9,7 +9,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css" rel="stylesheet">
 </head>
 
-<body class="min-h-screen bg-white text-black dark:bg-black dark:text-white">
+<body class="min-h-screen bg-white text-black dark:bg-black dark:text-white scroll-smooth">
     <header id="header1" class="top-0 z-10  sticky bg-slate-800 transition-transform duration-300">
         <section class="mx-auto p-2 flex justify-between items-center">
             <div>
@@ -30,7 +30,7 @@
             </div>
 
             <div class="flex justify-end">
-                <h1 id="welcomeMessage" class="mr-7 hidden text-blue-500">hh</h1>
+                <h1 id="welcomeMessage" class="mr-7 hidden text-blue-500"></h1>
                 <button id="drop_menu" class="hidden mr-6">
                     <i class="fa-solid fa-bars" style="color: #ffffff;"></i>
                 </button>
@@ -41,9 +41,10 @@
             </div>
         </section>
     </header>
+
     <main>
         <!-- Home -->
-        <div id="petnest" class="pt-16">
+        <div id="petnest" class="pt-16 transform transition duration-500">
             <div class="flex">
                 <div class="mr-24 ml-16">
                     <h1
@@ -75,7 +76,7 @@
             </div>
         </div>
         <!-- Adopt-->
-        <div id="adoptpet" class="pt-16">
+        <div id="adoptpet" class="pt-16 transform transition duration-500">
             <h1 class=" ml-6 mt-12 mb-12 text-4xl font-bold text-orange-600 flex justify-center">Grab Your New
                 Best Friend</h1>
             <div class="flex justify-between ml-96 mr-96 mt-8 ">
@@ -171,56 +172,28 @@
                 </div>
             </div>
         </div>
-
-
-
+        <section id="aboutus" class="bg-gray-100 py-12 px-6 ">
+            <div class="max-w-4xl mx-auto text-center">
+              <h2 class="text-3xl font-bold text-gray-800 mb-4">About Us</h2>
+              <p class="text-gray-600 text-lg leading-relaxed px-10">
+                Welcome to <strong>PetNest</strong>, where we are dedicated to connecting loving pets with caring 
+                families. Our mission is to create a platform that makes pet adoption simple, 
+                transparent and accessible for everyone. Whether you're looking to adopt a new furry 
+                friend or find a safe home for a pet in need, we're here to help.
+              </p>
+              <div class="mt-6 space-y-2">
+                <p class="text-gray-600 text-lg">
+                  📧 Email: <a href="mailto:support@petnest.com" class="text-blue-500 hover:underline">support@petnest.com</a>
+                </p>
+                <p class="text-gray-600 text-lg">
+                  📍 Location: Mirpur, Dhaka
+                </p>
+              </div>
+            </div>
+          </section>
+          
 
     </main>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     <footer class="bg-be-foot text-white bottom-0 mt-10">
@@ -391,6 +364,12 @@
                         required>
                 </div>
                 <div>
+                    <label for="phone" class="block text-sm font-medium text-gray-800">Phone</label>
+                    <input type="text" id="phone" name="phone"
+                        class="bg-login-label text-gray-950 mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        required>
+                </div>
+                <div>
                     <label for="password" class="block text-sm font-medium text-gray-800">Password</label>
                     <input type="password" id="password" name="password"
                         class=" bg-login-label text-gray-950 mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -448,12 +427,6 @@
         
 
     </div>
-
-
-
-
-
-
 
     <script type="module" src="script.js"></script>
 </body>

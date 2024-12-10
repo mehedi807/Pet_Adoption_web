@@ -29,6 +29,12 @@ const petsSchema = new mongoose.Schema({
         type: String,
         
     },
+    phone:{
+        type: String,
+    },
+    usrID:{
+        type: String,
+    },
     
 
 },{

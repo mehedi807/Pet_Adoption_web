@@ -14,7 +14,7 @@ export const getSession = async (req, res) => {
 
 export const search_pet = async (req, res) => {
     try {
-        const { name, breed, location, type, petID } = req.query;
+        const { name, breed, location, type, petID,usrID } = req.query;
 
         // Build a dynamic query
         const query = {};
@@ -23,9 +23,10 @@ export const search_pet = async (req, res) => {
         if (location) query.location = new RegExp(location, 'i');
         if (type) query.type = new RegExp(type, 'i');
         if (petID) query.petID = new RegExp(petID, 'i');
-
-
+        if (usrID) query.usrID = new RegExp(usrID, 'i');
         const result = await Pet.find(query);
+        console.log(result);
+        
         res.status(200).json(result);
     } catch (err) {
         res.status(500).json({ error: 'Server error', details: err.message });
@@ -33,13 +34,13 @@ export const search_pet = async (req, res) => {
 };
 
 export const user_add = async (req, res) => {
-    const { name, email, pass, role, usrID } = req.body;
-    if (!name || !email || !pass || !usrID) {
+    const { name, email, pass, role, usrID,phone } = req.body;
+    if (!name || !email || !pass || !usrID || !phone) {
         return res.status(400).json({ success: false, message: "Please provide all fields" });
     }
     const saltRounds = 10;
     const hashedPass = await bcrypt.hash(pass, saltRounds);
-    const newuser = new User({ name, email, pass: hashedPass, role, usrID });
+    const newuser = new User({ name, email, pass: hashedPass, role, usrID,phone });
 
     try {
         await newuser.save();
@@ -49,6 +50,22 @@ export const user_add = async (req, res) => {
         res.status(500).json({ success: false, message: "server error" });
     }
 };
+//get user 
+export const get_user = async (req, res) => {
+    try {
+        const { usrID } = req.body; 
+        const user = await User.find({ usrID }); 
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.status(200).json(user); 
+    } catch (err) {
+        res.status(500).json({ error: "Server error", details: err.message });
+    }
+};
+
+
 //update user Favourite
 export const user_update_fav = async (req, res) => {
     const { usrID } = req.params;
@@ -152,12 +169,12 @@ export const user_logout = (req, res) => {
 
 export const add_pet = async (req, res) => {
     console.log(0);
-    const { name, type, breed, age, location, petID } = req.body;
+    const { name, type, breed, age, location, petID, phone,usrID } = req.body;
 
-    if (!name || !type || !breed || !age || !location || !petID) {
+    if (!name || !type || !breed || !age || !location || !petID || !phone || !usrID) {
         return res.status(400).json({ success: false, message: "Please provide all fields" });
     }
-    console.log(1);
+    //console.log(1);
     let imageUrl = '';
     if (req.file) {
         try {
@@ -169,7 +186,7 @@ export const add_pet = async (req, res) => {
             return res.status(500).json({ success: false, message: "Error uploading image" });
         }
     }
-    console.log(2);
+    //console.log(2);
     const newPet = new Pet({
         name,
         type,
@@ -178,8 +195,10 @@ export const add_pet = async (req, res) => {
         location,
         image: imageUrl,
         petID,
+        phone,
+        usrID,
     });
-    console.log(3);
+    //console.log(3);
     try {
         console.log(4);
         await newPet.save();
