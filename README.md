@@ -17,6 +17,7 @@ The **Pet Adoption Website** is an online platform that allows users to adopt pe
 - [Usage](#usage)
 - [Folder Structure](#folder-structure)
 - [Technologies Used](#technologies-used)
+- [Project Contribution](#project-contribution)
 
 ## Installation
 
