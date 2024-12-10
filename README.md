@@ -103,3 +103,11 @@ Ensure you have the following installed on your machine:
 - **Hosting**: Hosted on render for testing.
 
 
+## Project Contribution
+
+- **Mehedi**: Led the development process, taking charge of backend and frontend functionality using javascript.
+- **Jahid**: Worked on the frontend HTML structure and layout.
+- **Tanveer**: Focused on the "Favourites" feature and "Your Pet" functionality.
+- **Kashfee**: Developed the "User Profile" section and contributed to UI design.
+- **Tawhid**: Contributed to overall UI design improvements.
+
