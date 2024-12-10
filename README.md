@@ -27,7 +27,7 @@ To set up this project locally, follow the steps below:
 Ensure you have the following installed on your machine:
 
 - **Node.js** (Version 14 or higher) - [Download Node.js](https://nodejs.org/)
-- **MongoDB** (MongoDB Atlas for cloud hosting) - [Download MongoDB](https://www.mongodb.com/products/platform/atlas-database)
+- **MongoDB** (MongoDB Atlas for cloud hosting) - [Cloud MongoDB](https://www.mongodb.com/products/platform/atlas-database)
 - **Git** (For cloning the repository) - [Download Git](https://git-scm.com/)
 
 ### Steps
@@ -63,21 +63,27 @@ Ensure you have the following installed on your machine:
 ```plaintext
 ├── back/                   # Backend code directory
 │   ├── server.js           # Entry point for the server
+|
 │   ├── config/             # Configuration files
 │   │   └── db.js           # Database connection configuration
+|
 │   ├── models/             # MongoDB models
 │   │   ├── users_model.js  # User schema
 │   │   └── pet_details_model.js # Pet details schema
+|
 │   ├── controller/         # Logic for API requests
 │   │   └── all_controler.js # All controller logic
+|
 │   ├── routes/             # API routes
 │   │   └── all_route.js    # All application routes
+|
 │   ├── public/             # Public assets
 │   │   ├── script.js       # JavaScript logic for the front end
 │   │   ├── output.css      # Compiled CSS
 │   │   ├── input.css       # Tailwind source CSS
 │   │   └── index.html      # Main HTML file
 │   ├── drawable/           # Static assets like images and icons
+|
 ├── node_modules            # All installed Node.js dependencies
 ├── uploads                 # Store uploaded images
 ├── package.json            # Project dependencies, scripts, and metadata
