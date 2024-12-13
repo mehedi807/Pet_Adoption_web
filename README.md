@@ -35,7 +35,7 @@ Ensure you have the following installed on your machine:
 
  **Clone the Repository**
    ```bash
-   git clone https://github.com/mehedi807/Pet_adoption.git
+   git clone https://github.com/mehedi807/Pet_Adoption_web.git
    cd Pet_adoption
    npm run dev
 ```
